@@ -50,6 +50,7 @@ It use `최종_박스오피스_데이터.csv`, `cgv_장르_줄거리_통합본.c
 Then split `boxoffice_data.csv` and `movie_info_data.csv`.  
 
 2. `boxoffice_data.csv`  
+
 | 변수명 | 타입 | 설명 |
 |---|---|---|
 | Movie_Title | object | 영화 제목 |
@@ -64,6 +65,7 @@ Then split `boxoffice_data.csv` and `movie_info_data.csv`.
 | now_showing | int64 | 데이터를 수집한 2025년 9월 6일 기준 상영영화 구분<br>상영중이면 1, 더이상 상영을 하지 않는다면 0 |
 | Year | int64 | 박스오피스 집계 일자의 연도를 추출<br>연도별 티켓값의 상승 및 미묘한 심리 반영 |  
 3. `movie_info_data.csv`  
+
 | 변수명 | 타입 | 설명 |
 |---|---|---|
 | Movie_Title | object | 영화 제목 |
