@@ -82,6 +82,8 @@ And collect for all movies, preprocess, save in one csv file in `cgv리뷰_전�
 1. `휴일데이터.ipynb`  
 Collect every S.Korea' Holiday dates, including Sat. and Sun.  
 And collect `문화의 날`, the day when movie tickets are discounted.  
+2. `calendar_dataset.csv`
+Contain S.Korea' Holiday dates and `문화의 날`.
 
 ## IV. `analysis` folder
 Make final dataset for **analysis**.  
