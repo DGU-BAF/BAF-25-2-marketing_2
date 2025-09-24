@@ -1,6 +1,46 @@
 # BAF-25-2-marketing_2
 비어플 25년 2학기 마케팅 2팀
 
+# File Tree
+```bash
+.
+├── README.md
+└── preprocessing
+    ├── analysis
+    │   ├── boxoffice_data.csv
+    │   ├── movie_info_data.csv
+    │   └── 분석용데이터생성.ipynb
+    ├── calendar_dataset.csv
+    ├── 휴일데이터.ipynb
+    ├── 영화리뷰크롤링
+    │   ├── cgv리뷰_전처리
+    │   │   ├── 1.전처리파일통합.ipynb
+    │   │   ├── 2.전처리.ipynb
+    │   │   ├── 3.줄거리수집통합.ipynb
+    │   │   └── 전처리파일저장
+    │   │       ├── cgv_장르_줄거리_통합본.csv
+    │   │       ├── cgv_원본_통합파일.csv
+    │   │       └── cgv_전처리_통합파일.csv
+    │   ├── 크롤링봇
+    │   │   ├── cgv_줄거리.ipynb
+    │   │   └── cgv_리뷰제외.ipynb
+    │   └── 영화리뷰데이터_저장
+    │       ├── cgv_장르_줄거리.zip
+    │       └── cgv데이터.zip
+    └── 영화관람객크롤링
+        ├── 원본_박스오피스_데이터.csv
+        ├── 최종_박스오피스_데이터.csv
+        ├── 영화목록.csv
+        ├── 엑셀데이터
+        │   └── 박스오피스_원본엑셀데이터.zip
+        ├── 일별박스오피스_전처리.ipynb
+        ├── 일별박스오피스_영화별정리.ipynb
+        ├── 주별박스오피스_엑셀파일추출.ipynb
+        ├── 일별박스오피스데이터
+        │   └── 박스오피스_일별분할데이터.zip
+        └── 영화별박스오피스데이터
+            └── 영화별_박스오피스_데이터.zip
+```
 
 # Extract Analysis Data
 All courses are saved in a `preprocessing` folder.
