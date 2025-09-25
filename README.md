@@ -42,7 +42,7 @@
             └── 영화별_박스오피스_데이터.zip
 ```
 
-# Extract and Preprocessing Analysis Data
+# Extract and Preprocess Analysis Data
 All courses are saved in a `preprocessing` folder.
 
 ## I. `영화관람객크롤링` folder
