@@ -64,16 +64,16 @@ And extract the movie list. (`영화목록.csv`) It is used as a criterion for s
 1. `크롤링봇/cgv_리뷰제외.ipynb`  
 Extract movie ratings, actor list, etc. through cgv web crawling based on movie list `영화목록`.csv`.  
 Save in `영화리뷰데이터_저장/cgv데이터` folder by csv for each movie (Compressed by zip).  
-2. `크롤링봇/cgv_줄거리.ipynb`  
-Extract movie summary, genres through cgv web crawling based on movie list `영화목록`.  
-Save in `영화리뷰데이터_저장/cgv_장르_줄거리` folder by csv for each movie (Compressed by zip).  
-3. `cgv리뷰_전처리/1.전처리파일통합.ipynb`  
+2. `cgv리뷰_전처리/1.전처리파일통합.ipynb`  
 Collect all movie information data extract from cgv. (`영화리뷰데이터_저장/cgv데이터`)  
 Save in `cgv리뷰_전처리/전처리파일저장/cgv_원본_통합파일.csv`.  
-4. `cgv리뷰_전처리/2.전처리.ipynb`  
+3. `cgv리뷰_전처리/2.전처리.ipynb`  
 Preprocess `cgv_원본_통합파일.csv`.  
 We only use movie title, actor list, director list from this.  
 And save in `cgv리뷰_전처리/전처리파일저장/cgv_전처리_통합파일.csv`.  
+3. `크롤링봇/cgv_줄거리.ipynb`  
+Extract movie summary, genres through cgv web crawling based on movie list `cgv_전처리_통합파일.csv`.  
+Save in `영화리뷰데이터_저장/cgv_장르_줄거리` folder by csv for each movie (Compressed by zip).  
 5. `cgv리뷰_전처리/3.줄거리수집통합.ipynb`  
 Collect all movie genre and summary data extract from cgv. (`영화리뷰데이터_저장/cgv_장르_줄거리`)  
 And collect for all movies, preprocess, save in one csv file in `cgv리뷰_전처리/전처리파일저장/cgv_장르_줄거리_통합본.csv`.
