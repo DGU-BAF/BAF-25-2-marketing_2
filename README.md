@@ -106,6 +106,7 @@ Then split `boxoffice_data.csv` and `movie_info_data.csv`.
 | Pandemic | int64 | 코로나 팬데믹 구분<br>~ 2020년 1월 : 0<br>2020년 2월 ~ 2023년 5월 : 1<br>2023년 6월 ~ : 2 |
 | now_showing | int64 | 데이터를 수집한 2025년 9월 6일 기준 상영영화 구분<br>상영중이면 1, 더이상 상영을 하지 않는다면 0 |
 | Year | int64 | 박스오피스 집계 일자의 연도를 추출<br>연도별 티켓값의 상승 및 미묘한 심리 반영 |  
+
 3. `movie_info_data.csv`  
 
 | 변수명 | 타입 | 설명 |
