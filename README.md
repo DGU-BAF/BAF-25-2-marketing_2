@@ -230,4 +230,30 @@ CatBoost와 LightGBM 머신러닝 모델을 사용하여 1만명 미만의 영�
 - `model/이진분류/catboost_model_10k.cbm` : 최종 CatBoost 모델
 - `model/이진분류/lightgbm_model_10k.txt` : 최종 LightGBM 모델
 
-21.  `model/이진분류/계층적이진분류_10k.ipynb`  
+21.  `model/이진분류/이진분류_5m_모델사용x.ipynb`  
+트리기반 앙상블 모델을 사용하지 않고 500만명 초과의 영화를 예측.  
+즉 1만명 이상 500만명 이하, 500만명 초과의 영화 중에서 500만명 초과의 영화만 예측 후 제거한다.  
+클러스터링 분석을 이용해 500만명 미만, 500만명 초과 초반 흥행 저조, 500만명 초과 초반 흥행 새 클래스로 구분 후 다중분류 진행  
+최종적으로 SVM모델을 사용한다.  
+- `model/이진분류/svm_scaler.joblib` : 표준화 스케일러 정보 저장 (`predict`데이터 변환 용도)
+- `model/이진분류/pca_1.joblib` : 첫번째 주성분 변환 정보 저장 (`predict`데이터 변환 용도)
+- `model/이진분류/pca_2.joblib` : 두번째 주성분 변환 정보 저장 (`predict`데이터 변환 용도)
+- `model/이진분류/svm_model_5m.joblib` : svm 모델 저장 (`predict`데이터 변환 용도)
+
+22. `model/이진분류/이진분류진행.ipynb`  
+`predict`데이터로 1만명, 500만명 이진/다중 분류를 진행한 최종 예측 결과이다.
+
+# IV. 영화 총 상영주차 예측
+### 영화 흥행 유형(패턴)과 총 상영주차 예측을 위한 상관분석
+23. `week_predict/영화흥행유형.ipynb`  
+- 영화 흥행 유형(패턴)생성  
+- FA분석  
+- 영화 흥행 유형(패턴) 집단간 FA점수의 분포 차이 분석
+- 총 상영주차와 변수 유의성 검정
+- - `week_predict/full_data_for_week_predict.csv` : 총 상영주차 예측 모델용 `train`과 `test`데이터를 합친 것 (1만명 ~ 500만명 영화)  
+- - `week_predict/fa_data_for_week_predict.csv` : 총 상영주차 예측 모델 생성용 데이터 (1만명 ~ 500만명 영화)  
+- - `week_predict/movie_hit_category.csv` : 생성한 영화 흥행 유형(패턴) 저장  
+- - `week_predict/standard_scaler_FA.pkl` : FA분석에 사용한 표준화 변환 정보 저장 (`predict`데이터 변환 용도)   
+- - `week_predict/FA_model.pkl` : FA변환 정보 저장 (`predict`데이터 변환 용도)  
+
+### 총 상영주차 예측 
