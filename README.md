@@ -101,15 +101,15 @@
 여러개의 분할 csv파일로 저장하였다.
 
 # II. 분석용 데이터 전처리 및 EDA
-Make final dataset for **analysis**.  
-12. `analysis/분석용데이터생성.ipynb`  
+### 분석용 데이터 생성
+12.  `analysis/분석용데이터생성.ipynb`  
 사용한 데이터 :  
-- - `preprocessing/영화관람객크롤링/최종_박스오피스_데이터.csv`  
-- - `preprocessing/영화리뷰크롤링/cgv리뷰_전처리/전처리파일저장/cgv_장르_줄거리_통합본.csv`  
-- - `preprocessing/영화리뷰크롤링/cgv리뷰_전처리/전처리파일저장/cgv_전처리_통합파일.csv`  
-- - `preprocessing/calendar_dataset.csv`  
+- `preprocessing/영화관람객크롤링/최종_박스오피스_데이터.csv`  
+- `preprocessing/영화리뷰크롤링/cgv리뷰_전처리/전처리파일저장/cgv_장르_줄거리_통합본.csv`  
+- `preprocessing/영화리뷰크롤링/cgv리뷰_전처리/전처리파일저장/cgv_전처리_통합파일.csv`  
+- `preprocessing/calendar_dataset.csv`  
 이 데이터들을 전부 통합한다.  
-그리고 `analysis/boxoffice_data.csv`와 `analysis/movie_info_data.csv`로 분리하여 저장한다.
+그리고 `analysis/boxoffice_data.csv`와 `analysis/movie_info_data.csv`로 분리하여 저장한다.  
 
 13. `analysis/boxoffice_data.csv`  
 
@@ -145,18 +145,89 @@ Make final dataset for **analysis**.
 `analysis/movie_info_data.csv`의 '영화 줄거리'에 임베딩 변환을 적용한다.  
 모델은 hugging face에 공개되어있는 jina-embeddings-v3 모델을 사용한다
 그 이유는  
-- -  상위권에 존재
-- -  Max Tokens값이 많아 줄거리와 같은 긴 글에 적합해보였다
-- -  10월 2일 기준 Zero-shot이 100%로 높았다
-- - 마트료시카 임베딩을 적용 -> 중요한 정보일수록 앞쪽 차원에 배치되어 임베딩 차원을 편히 선택할 수 있다.  
+-  상위권에 존재
+-  Max Tokens값이 많아 줄거리와 같은 긴 글에 적합해보였다
+-  10월 2일 기준 Zero-shot이 100%로 높았다
+- 마트료시카 임베딩을 적용 -> 중요한 정보일수록 앞쪽 차원에 배치되어 임베딩 차원을 편히 선택할 수 있다.  
+
 생성된 영화 줄거리 임베딩 데이터는 `analysis/movie_summary_embedding.csv`에 저장한다.  
 
 16. `analysis/영화별_장르벡터.ipynb`  
 `analysis/movie_info_data.csv`의 '장르'데이터를 이용하여 멀티핫 벡터를 생성한다.  
 생성된 데이터는 `analysis/movie_genre_multi_hot.csv`에 저장한다.
 
-17. `analysis/EDA`
+### EDA
+17. `analysis/EDA`  
 해당 폴더 안에는 각 팀원들이 지금까지의 데이터를 가지고 EDA를 진행한 코드가 저장되어 있다.  
 특히 `analysis/EDA/지승우.ipynb`에서는 배급사별로 유형을 구분하였다.  
 구분은 대형과 소형, 흥행과 비흥행 총 네단계로 구분되어진다.  
 해당 배급사 데이터는 `distributor_labels.csv`에 저장하였다.
+
+# III. 모델 학습  
+### 모델학습용 데이터 생성
+18. `model/모델학습데이터생성.ipynb`  
+`analysis`폴더에서 생성한 csv 데이터 전부를 사용한다  
+- 이상치 영화 제거  
+- 종속변수 -> 영화별 총 관객수, 상영주차, 상영일차
+- 1, 2주차 평일, 공휴일 구분
+- 영화별 팬데믹, 개봉일자, 개봉월, 개봉년도
+- 영화별 배급사 카운트
+- 영화별 상영 등급, 대표 국가
+- 256차원 임베딩 벡터 -> 256개의 컬럼으로 분리
+- 25.09.06기준 상영중인 영화 구분 -> `predict`
+- 1만명 미만, 500만명 초과 영화 분리
+- `train`. `test` 분리  
+
+그 결과 다섯개의 데이터 생성  
+`model/model_train_data.csv` : train dataset
+`model/model_test_data.csv` : test dataset
+`model/model_predict_data.csv` : predict dataset (25.09.06 기준 상영중인 영화, 최종 분석용)
+`model/model_below_10k_data.csv` : 1만명 미만 영화 예측용 데이터셋
+`model/model_upper_5M_data.csv` : 500만명 초과 영화 예측용 데이터셋  
+
+각 데이터의 구조는 아래과 같다  
+| 변수명 | 타입 | 설명 |
+|---|---|---|
+|Movie_Title|object|영화 이름|
+|Total_Audience_Count|int64|총 관람객 수|
+|Total_Show_Days|int64|총 상영일수 횟수|
+|Total_Weeks|int64|총 상영 주차|
+|wk1_Audience|float64|1주차 관객수|
+|wk1_AudiencePerShow|float64|(1주차 관객수) / (1주차 상영횟수)|
+|wk2_Audience|int64|2주차 관객수|
+|wk2_AudiencePerShow|float64|(2주차 관객수) / (2주차 상영횟수) |
+|Show_Change|float64|(2주차 상영횟수) / (1주차 상영횟수)|
+|opening_Ho_Retention|float64|(2주차 휴일 일평균 관객수) / (1주차 휴일 일평균 관객수)|
+|wk1_Holiday_AudienceMean|float64|1주차 공휴일 평균 관객수|
+|wk1_Holiday_ShowMean|float64|1주차 공휴일 평균 상영횟수|
+|wk2_Holiday_AudienceMean|float64|2주차 공휴일 평균 관객수|
+|wk2_Holiday_ShowMean|float64|2주차 공휴일 평균 상영횟수|
+|opening_AudienceStd|float64|초반_관객수표준편차|
+|Year|int64|개봉연도|
+|Month|int64|개봉월|
+|Pandemic|int64|팬데믹 구분|
+|dist_big_flop|int64|배급사 대형/비흥행|
+|dist_big_hit|int64|배급사 대형/흥행|
+|dist_small_flop|int64|배급사 소형/비흥행|
+|dist_small_hit|int64|배급사 소형/흥행|
+|Grade|object|영화 등급|
+|Main_Country|object|영화 대표 국적|
+|e1 ~ e256|float64|영화 줄거리 임베딩 256차원|  
+
+19. `model/필모그래피벡터생성.ipynb`  
+`analysis/movie_genre_multi_hot.csv`과 `preprocessing/배우추출_api`에서 추출한 모든 배우와 감독의 영화 필모그래피를 결합  
+- 우선 각 배우, 감독이 연출한 영화의 모든 장르를 멀티 핫 인코딩 후 카운트 후 벡터화  
+- 이것의 전체 합이 1이 되도록 L1정규화 
+- 각 영화에 출연한 배우, 감독의 멀티 핫 인코딩 벡터를 합함
+- 그리고 L1정규화 진행
+- - `model/actor_genre.csv`  배우 필모그래피 장르 벡터
+- - `model/director_genre.csv`  감독 필모그래피 장르 벡터
+
+### 이진 분류
+20. `model/이진분류/계층적이진분류_10k.ipynb`  
+CatBoost와 LightGBM 머신러닝 모델을 사용하여 1만명 미만의 영화를 예측.  
+즉 1만명 미만, 1만명 이상 500만명 이하, 500만명 초과의 영화 중에서 1만명 미만의 영화만 예측 후 제거한다.
+- `model/이진분류/catboost_model_10k.cbm` : 최종 CatBoost 모델
+- `model/이진분류/lightgbm_model_10k.txt` : 최종 LightGBM 모델
+
+21.  `model/이진분류/계층적이진분류_10k.ipynb`  
