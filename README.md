@@ -1,5 +1,6 @@
 # BAF-25-2-marketing_2
-비어플 25년 2학기 마케팅 2팀1
+비어플 25년 2학기 마케팅 2팀  
+생성한 데이터 파일 중 zip파일은 용량 및 정리의 용이성, 보안을 위해 해당 레포지토리에는 업로드 하지 않는다.
 
 # File Tree
 ```bash
@@ -42,50 +43,57 @@
             └── 영화별_박스오피스_데이터.zip
 ```
 
-# Extract and Preprocess Analysis Data
-All courses are saved in a `preprocessing` folder.
+# I. 초기 영화 박스오피스 데이터 수집과 전처리
 
-## I. `영화관람객크롤링` folder
-1. `주별박스오피스_엑셀파일추출.ipynb`  
-"일별 박스오피스" of "KOBIS 영화관입장권통합전산망".  
-https://www.kobis.or.kr/kobis/business/stat/boxs/findDailyBoxOfficeList.do  
-Download every Excel data from 2003-11-11 to 2025-09-06.  
-By using **Dynamic Web Crawling**  
-Save raw files in `엑셀데이터` folder. This is compressed - `박스오피스_원본엑셀데이터.zip`.  
-2. `일별박스오피스_전처리.ipynb`  
-Decompress every Excel data and save daily files by csv.  
-Save daily files in `일별박스오피스데이터` folder. This is compressed - `박스오피스_일별분할데이터.zip`.  
-3. `일별박스오피스_영화별정리.ipynb`  
-Collect all daily files(`원본_박스오피스_데이터.csv`) and save box office data by movie in   `영화별박스오피스데이터` folder. This is compressed - `영화별_박스오피스_데이터.zip`.  
-The reason for doing this is to add the date of each movie.  
-And extract the movie list. (`영화목록.csv`) It is used as a criterion for searching for movies on CGV.  
+### 박스오피스 데이터 추출
+1. `preprocessing/영화관람객크롤링/주별박스오피스_엑셀파일추출.ipynb`  
+"KOBIS 영화관입장권통합전산망"에서 "일별 박스오피스"를 추출함  
+[KOBIS 일별박스오피스](https://www.kobis.or.kr/kobis/business/stat/boxs/findDailyBoxOfficeList.do)  
+`동적 웹크롤링`을 이용하여 엑셀 파일 다운로드 from 2003-11-11 to 2025-09-06.  
+그 결과물은 `zip`으로 압축하여 `preprocessing/영화관람객크롤링/엑셀데이터/박스오피스_원본엑셀데이터.zip`에 저장한다.  
 
-## II. `영화리뷰크롤링` folder
-1. `크롤링봇/cgv_리뷰제외.ipynb`  
-Extract movie ratings, actor list, etc. through cgv web crawling based on movie list `영화목록`.csv`.  
-Save in `영화리뷰데이터_저장/cgv데이터` folder by csv for each movie (Compressed by zip).  
-2. `cgv리뷰_전처리/1.전처리파일통합.ipynb`  
-Collect all movie information data extract from cgv. (`영화리뷰데이터_저장/cgv데이터`)  
-Save in `cgv리뷰_전처리/전처리파일저장/cgv_원본_통합파일.csv`.  
-3. `cgv리뷰_전처리/2.전처리.ipynb`  
-Preprocess `cgv_원본_통합파일.csv`.  
-We only use movie title, actor list, director list from this.  
-And save in `cgv리뷰_전처리/전처리파일저장/cgv_전처리_통합파일.csv`.  
-3. `크롤링봇/cgv_줄거리.ipynb`  
-Extract movie summary, genres through cgv web crawling based on movie list `cgv_전처리_통합파일.csv`.  
-Save in `영화리뷰데이터_저장/cgv_장르_줄거리` folder by csv for each movie (Compressed by zip).  
-5. `cgv리뷰_전처리/3.줄거리수집통합.ipynb`  
-Collect all movie genre and summary data extract from cgv. (`영화리뷰데이터_저장/cgv_장르_줄거리`)  
-And collect for all movies, preprocess, save in one csv file in `cgv리뷰_전처리/전처리파일저장/cgv_장르_줄거리_통합본.csv`.
+2. `preprocessing/영화관람객크롤링/일별박스오피스_전처리.ipynb`  
+`preprocessing/영화관람객크롤링/엑셀데이터/박스오피스_원본엑셀데이터.zip`의 데이터를 데이터 프레임으로 변환 후 일별로 분리하여 `csv`파일로 저장한다.    
+해당 파일들은 `zip`으로 압축하여 `preprocessing/영화관람객크롤링/일별박스오피스데이터/박스오피스_일별분할데이터.zip`에 저장한다.  
 
-## III. route folder
-1. `휴일데이터.ipynb`  
-Collect every S.Korea' Holiday dates, including Sat. and Sun.  
-And collect `문화의 날`, the day when movie tickets are discounted.  
-2. `calendar_dataset.csv`
-Contain S.Korea' Holiday dates and `문화의 날`.
+3. `preprocessing/영화관람객크롤링/일별박스오피스_영화별정리.ipynb`  
+`preprocessing/영화관람객크롤링/일별박스오피스데이터/박스오피스_일별분할데이터.zip`의 모든 파일을 하나의 파일로 통합한다. -> `preprocessing/영화관람객크롤링/원본_박스오피스_데이터.csv`  
+이후 영화별로 일별 박스오피스 데이터로 나누어 `preprocessing/영화관람객크롤링/영화별박스오피스데이터/영화별_박스오피스_데이터.zip`에 저장한다.  
+또한 여기서 분석에 사용할 영화 제목 리스트를 `preprocessing/영화관람객크롤링/영화목록.csv`에 저장한다.  
+이것은 CGV검색 용으로 사용된다.
 
-## IV. `analysis` folder
+### CGV 영화 정보 크롤링
+4. `preprocessing/영화리뷰크롤링/크롤링봇/cgv_리뷰제외.ipynb`  
+동적 웹크롤링을 이용하여, `영화관람객크롤링/영화목록.csv`의 모든 영화를 CGV를 이용해 검색을 한다.  
+영화의 평점과 감독 리스트 등등을 추출한다.  
+각각의 영화에 대한 크롤링 결과는 `preprocessing/영화리뷰크롤링/영화리뷰데이터_저장/cgv데이터.zip`으로 저장한다.
+
+5. `preprocessing/영화리뷰크롤링/cgv리뷰_전처리/1.전처리파일통합.ipynb`  
+`preprocessing/영화리뷰크롤링/영화리뷰데이터_저장/cgv데이터.zip`의 데이터를 하나의 파일로 통합한다.  
+`preprocessing/영화리뷰크롤링/cgv리뷰_전처리/전처리파일저장/cgv_원본_통합파일.csv`로 저장한다.    
+
+6. `preprocessing/영화리뷰크롤링/cgv리뷰_전처리/2.전처리.ipynb`  
+`preprocessing/영화리뷰크롤링/cgv리뷰_전처리/전처리파일저장/cgv_원본_통합파일.csv`를 전처리 진행한다.  
+여기서 영화 제목, 감독과 배우 리스트만을 추출한다.
+전처리 결과는 `preprocessing/영화리뷰크롤링/cgv리뷰_전처리/전처리파일저장/cgv_전처리_통합파일.csv`에 저장한다.    
+
+7. `preprocessing/영화리뷰크롤링/크롤링봇/cgv_줄거리.ipynb`  
+`preprocessing/영화리뷰크롤링/cgv리뷰_전처리/전처리파일저장/cgv_전처리_통합파일.csv`의 추출 가능한 영화 목록을 기준으로  
+각 영화의 줄거리, 장르를 CGV 웹크롤링으로 추출한다.  
+각각의 영화 파일은 `preprocessing/영화리뷰크롤링/영화리뷰데이터_저장/cgv_장르_줄거리.zip`로 저장한다.  
+
+8. `preprocessing/영화리뷰크롤링/cgv리뷰_전처리/3.줄거리수집통합.ipynb`  
+`preprocessing/영화리뷰크롤링/영화리뷰데이터_저장/cgv_장르_줄거리.zip`의 모든 영화를 하나의 파일로 통합한다.
+그 결과를 `preprocessing/영화리뷰크롤링/cgv리뷰_전처리/전처리파일저장/cgv_장르_줄거리_통합본.csv`로 저장한다.
+
+### 공휴일, 문화의 날 수집
+1. `preprocessing/휴일데이터.ipynb`  
+대한민국의 토요일, 일요일을 포함한 모든 '공휴일'을 수집한다.  
+또한 영화관람표를 할인해주는 '문화의 날'도 수집한다. 
+2. `preprocessing/calendar_dataset.csv`
+`preprocessing/휴일데이터.ipynb`에서 수집한 데이터를 저장한 것이다.
+
+### 분석용 데이터 전처리
 Make final dataset for **analysis**.  
 1. `분석용데이터생성.ipynb`  
 It use `최종_박스오피스_데이터.csv`, `cgv_장르_줄거리_통합본.csv`, `cgv_전처리_통합파일.csv` and `calendar_dataset.csv`.  
