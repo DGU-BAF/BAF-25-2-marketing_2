@@ -255,3 +255,5 @@ CatBoost와 LightGBM 머신러닝 모델을 사용하여 1만명 미만의 영�
 - - `week_predict/movie_hit_category.csv` : 생성한 영화 흥행 유형(패턴) 저장  
 - - `week_predict/standard_scaler_FA.pkl` : FA분석에 사용한 표준화 변환 정보 저장 (`predict`데이터 변환 용도)   
 - - `week_predict/FA_model.pkl` : FA변환 정보 저장 (`predict`데이터 변환 용도)  
+
+### 총 상영주차 예측 
