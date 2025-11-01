@@ -60,7 +60,8 @@
 `preprocessing/영화관람객크롤링/일별박스오피스데이터/박스오피스_일별분할데이터.zip`의 모든 파일을 하나의 파일로 통합한다. -> `preprocessing/영화관람객크롤링/원본_박스오피스_데이터.csv`  
 이후 영화별로 일별 박스오피스 데이터로 나누어 `preprocessing/영화관람객크롤링/영화별박스오피스데이터/영화별_박스오피스_데이터.zip`에 저장한다.  
 또한 여기서 분석에 사용할 영화 제목 리스트를 `preprocessing/영화관람객크롤링/영화목록.csv`에 저장한다.  
-이것은 CGV검색 용으로 사용된다.
+이것은 CGV검색 용으로 사용된다.  
+마지막으로 최초 개봉, 재개봉 로직을 생성 후 `preprocessing/영화관람객크롤링/최종_박스오피스_데이터.csv`로 저장한다.
 
 ### CGV 영화 정보 크롤링
 4. `preprocessing/영화리뷰크롤링/크롤링봇/cgv_리뷰제외.ipynb`  
@@ -87,19 +88,30 @@
 그 결과를 `preprocessing/영화리뷰크롤링/cgv리뷰_전처리/전처리파일저장/cgv_장르_줄거리_통합본.csv`로 저장한다.
 
 ### 공휴일, 문화의 날 수집
-1. `preprocessing/휴일데이터.ipynb`  
+9. `preprocessing/휴일데이터.ipynb`  
 대한민국의 토요일, 일요일을 포함한 모든 '공휴일'을 수집한다.  
 또한 영화관람표를 할인해주는 '문화의 날'도 수집한다. 
-2. `preprocessing/calendar_dataset.csv`
+10. `preprocessing/calendar_dataset.csv`
 `preprocessing/휴일데이터.ipynb`에서 수집한 데이터를 저장한 것이다.
 
-### 분석용 데이터 전처리
-Make final dataset for **analysis**.  
-1. `분석용데이터생성.ipynb`  
-It use `최종_박스오피스_데이터.csv`, `cgv_장르_줄거리_통합본.csv`, `cgv_전처리_통합파일.csv` and `calendar_dataset.csv`.  
-Then split `boxoffice_data.csv` and `movie_info_data.csv`.  
+### 배우 및 감독 필모그래피 수집  
+11. `preprocessing/배우추출_api`  
+해당 폴더에서는 KOFIC의 API를 이용하여 배우와 감독의 목록을 추출하였다.  
+여기엔 각 인물의 출연 및 연출 영화 필모그래피가 포함되어있다.  
+여러개의 분할 csv파일로 저장하였다.
 
-2. `boxoffice_data.csv`  
+# II. 분석용 데이터 전처리 및 EDA
+Make final dataset for **analysis**.  
+12. `analysis/분석용데이터생성.ipynb`  
+사용한 데이터 :  
+- - `preprocessing/영화관람객크롤링/최종_박스오피스_데이터.csv`  
+- - `preprocessing/영화리뷰크롤링/cgv리뷰_전처리/전처리파일저장/cgv_장르_줄거리_통합본.csv`  
+- - `preprocessing/영화리뷰크롤링/cgv리뷰_전처리/전처리파일저장/cgv_전처리_통합파일.csv`  
+- - `preprocessing/calendar_dataset.csv`  
+이 데이터들을 전부 통합한다.  
+그리고 `analysis/boxoffice_data.csv`와 `analysis/movie_info_data.csv`로 분리하여 저장한다.
+
+13. `analysis/boxoffice_data.csv`  
 
 | 변수명 | 타입 | 설명 |
 |---|---|---|
@@ -115,7 +127,7 @@ Then split `boxoffice_data.csv` and `movie_info_data.csv`.
 | now_showing | int64 | 데이터를 수집한 2025년 9월 6일 기준 상영영화 구분<br>상영중이면 1, 더이상 상영을 하지 않는다면 0 |
 | Year | int64 | 박스오피스 집계 일자의 연도를 추출<br>연도별 티켓값의 상승 및 미묘한 심리 반영 |  
 
-3. `movie_info_data.csv`  
+14. `analysis/movie_info_data.csv`  
 
 | 변수명 | 타입 | 설명 |
 |---|---|---|
@@ -128,3 +140,23 @@ Then split `boxoffice_data.csv` and `movie_info_data.csv`.
 | movie_summary | object | 영화 줄거리 (원본, 평문) |
 | Distributor_1~8 | object | 영화 배급사 목록 |
 | genre1~7 | object | 장르 목록<br>KOFIC과 CGV의 장르를 중복 제거 및 병합<br>(예 : 코미디, 드라마, SF, 액션 -> 하나의 영화에 네개의 장르) |  
+
+15. `analysis/줄거리_임베딩.ipynb`  
+`analysis/movie_info_data.csv`의 '영화 줄거리'에 임베딩 변환을 적용한다.  
+모델은 hugging face에 공개되어있는 jina-embeddings-v3 모델을 사용한다
+그 이유는  
+- -  상위권에 존재
+- -  Max Tokens값이 많아 줄거리와 같은 긴 글에 적합해보였다
+- -  10월 2일 기준 Zero-shot이 100%로 높았다
+- - 마트료시카 임베딩을 적용 -> 중요한 정보일수록 앞쪽 차원에 배치되어 임베딩 차원을 편히 선택할 수 있다.  
+생성된 영화 줄거리 임베딩 데이터는 `analysis/movie_summary_embedding.csv`에 저장한다.  
+
+16. `analysis/영화별_장르벡터.ipynb`  
+`analysis/movie_info_data.csv`의 '장르'데이터를 이용하여 멀티핫 벡터를 생성한다.  
+생성된 데이터는 `analysis/movie_genre_multi_hot.csv`에 저장한다.
+
+17. `analysis/EDA`
+해당 폴더 안에는 각 팀원들이 지금까지의 데이터를 가지고 EDA를 진행한 코드가 저장되어 있다.  
+특히 `analysis/EDA/지승우.ipynb`에서는 배급사별로 유형을 구분하였다.  
+구분은 대형과 소형, 흥행과 비흥행 총 네단계로 구분되어진다.  
+해당 배급사 데이터는 `distributor_labels.csv`에 저장하였다.
